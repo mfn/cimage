@@ -130,14 +130,14 @@ class CImage
     /**
      * Actual path to the image, $imageFolder . '/' . $imageSrc
      */
-    private $pathToImage;
+    protected $pathToImage;
 
 
 
     /**
      * Original file extension
      */
-    private $fileExtension;
+    protected $fileExtension;
 
 
 
