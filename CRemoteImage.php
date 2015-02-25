@@ -211,6 +211,15 @@ class CRemoteImage
         $type         = $this->http->getContentType();
         $extension    = $this->contentTypeToFileExtension($type);
 
+        # {{{ Try harder if no recognized content type is provided
+        if (false === $extension) {
+            $f = finfo_open();
+            $type = finfo_buffer($f, $this->http->getBody(), FILEINFO_MIME_TYPE);
+            finfo_close($f);
+            $extension = $this->contentTypeToFileExtension($type);
+        }
+        # }}}
+
         $this->cache['Date']           = gmdate("D, d M Y H:i:s T", $date);
         $this->cache['Max-Age']        = $maxAge;
         $this->cache['Content-Type']   = $type;
