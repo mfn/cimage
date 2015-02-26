@@ -322,7 +322,7 @@ class CRemoteImage
      */
     public function loadCacheDetails()
     {
-        $cacheFile = str_replace(array("/", ":", "#", ".", "?"), "-", $this->url);
+        $cacheFile = hash('sha256', $this->url);
         $this->fileName = $this->saveFolder . $cacheFile;
         $this->fileJson = $this->fileName . ".json";
         if (is_readable($this->fileJson)) {
