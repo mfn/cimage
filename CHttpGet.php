@@ -105,6 +105,7 @@ class CHttpGet
             CURLOPT_TIMEOUT         => 30,
             CURLOPT_FOLLOWLOCATION  => true,
             CURLOPT_MAXREDIRS       => 2,
+            CURLOPT_FAILONERROR     => true,
         );
 
         $ch = curl_init();
@@ -112,6 +113,12 @@ class CHttpGet
         $response = curl_exec($ch);
 
         if (!$response) {
+            trigger_error(
+              sprintf("Error with %s : curl error: %s",
+                $this->request['url'],
+                curl_error($ch)
+              )
+            );
             return false;
         }
 
