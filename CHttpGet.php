@@ -102,7 +102,7 @@ class CHttpGet
             CURLOPT_RETURNTRANSFER  => true,
             CURLINFO_HEADER_OUT     => $debug,
             CURLOPT_CONNECTTIMEOUT  => 5,
-            CURLOPT_TIMEOUT         => 5,
+            CURLOPT_TIMEOUT         => 30,
             CURLOPT_FOLLOWLOCATION  => true,
             CURLOPT_MAXREDIRS       => 2,
         );
