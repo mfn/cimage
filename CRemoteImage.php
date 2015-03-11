@@ -220,6 +220,7 @@ class CRemoteImage
         }
         # }}}
 
+        $this->cache['url']            = $this->url;
         $this->cache['Date']           = gmdate("D, d M Y H:i:s T", $date);
         $this->cache['Max-Age']        = $maxAge;
         $this->cache['Content-Type']   = $type;
