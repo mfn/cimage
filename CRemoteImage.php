@@ -239,7 +239,16 @@ class CRemoteImage
             $img = imagecreatefromstring($body);
 
             if ($img !== false) {
-                file_put_contents($this->fileImage, $body);
+                $tmpFile = $this->fileImage . '-' . rand();
+                file_put_contents($tmpFile, $body);
+                $f = fopen($this->fileImage, 'wr');
+                if (flock($f, LOCK_EX)) {
+                    rename($tmpFile, $this->fileImage);
+                    flock($f, LOCK_UN);
+                } else {
+                    trigger_error('couldnt get lock for rename() on ' . $this->fileImage);
+                }
+                fclose($f);
                 file_put_contents($this->fileJson, json_encode($this->cache));
                 return $this->fileImage;
             }
