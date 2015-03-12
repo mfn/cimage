@@ -2075,7 +2075,14 @@ class CImage
             case 'jpeg':
             case 'jpg':
                 $this->Log("Saving image as JPEG to cache using quality = {$this->quality}.");
-                imagejpeg($this->image, $this->cacheFileName, $this->quality);
+                $f = fopen($this->cacheFileName, 'wb');
+                if (flock($f, LOCK_EX)) {
+                    imagejpeg($this->image, $this->cacheFileName, $this->quality);
+                    flock($f, LOCK_UN);
+                } else {
+                    trigger_error('couldnt get lock for imagejpeg() on ' . $this->cacheFileName);
+                }
+                fclose($f);
 
                 // Use JPEG optimize if defined
                 if ($this->jpegOptimizeCmd) {
@@ -2093,7 +2100,12 @@ class CImage
 
             case 'gif':
                 $this->Log("Saving image as GIF to cache.");
-                imagegif($this->image, $this->cacheFileName);
+                $f = fopen($this->cacheFileName, 'wb');
+                if (flock($f, LOCK_EX)) {
+                    imagegif($this->image, $this->cacheFileName);
+                } else {
+                    trigger_error('couldnt get lock for imagegif() on ' . $this->cacheFileName);
+                }
                 break;
 
             case 'png':
@@ -2102,7 +2114,13 @@ class CImage
                 // Turn off alpha blending and set alpha flag
                 imagealphablending($this->image, false);
                 imagesavealpha($this->image, true);
-                imagepng($this->image, $this->cacheFileName, $this->compress);
+
+                $f = fopen($this->cacheFileName, 'wb');
+                if (flock($f, LOCK_EX)) {
+                    imagepng($this->image, $this->cacheFileName, $this->compress);
+                } else {
+                    trigger_error('couldnt get lock for imagepng() on ' . $this->cacheFileName);
+                }
 
                 // Use external program to filter PNG, if defined
                 if ($this->pngFilterCmd) {
@@ -2241,12 +2259,25 @@ class CImage
             }
 
             // Get details on image
-            $info = getimagesize($file);
+            $f = fopen($file, 'r');
+            if (flock($f, LOCK_EX)) {
+                $info = getimagesize($file);
+                flock($f, LOCK_UN);
+            } else {
+                trigger_error('Couldn\'t get lock for getimagesize() on ' . $file);
+            }
+            fclose($f);
             !empty($info) or $this->raiseError("The file doesn't seem to be an image.");
             $mime = $info['mime'];
 
             header('Content-type: ' . $mime);
-            readfile($file);
+            $f = fopen($file, 'r');
+            if (flock($f, LOCK_EX)) {
+                readfile($file);
+                flock($f, LOCK_UN);
+            } else {
+                trigger_error('Couldn\'t get lock for readfile() on ' . $file);
+            }
         }
 
         exit;
