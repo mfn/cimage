@@ -298,7 +298,7 @@ class CRemoteImage
         // First check if the cache is valid and can be used
         $this->loadCacheDetails();
 
-        if ($this->useCache) {
+        if ($this->useCache && $this->cache) {
             $src = $this->getCachedSource();
             if ($src) {
                 $this->status = 1;
